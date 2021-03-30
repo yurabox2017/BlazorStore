@@ -48,3 +48,8 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+.component-title {
+    border: 2px groove #17a2b8;
+    border-radius: 5px;
+}
