@@ -7,9 +7,11 @@
         <h1 class="text-info">Category List</h1>
     </div>
     <div class="col-6 text-right">
-        <button class="btn btn-info">Add New Category</button>
+        <button @onclick="ShowModal" data-toggle="modal" data-target="#PopModalCategory" class="btn btn-info">Add New Category</button>
     </div>
 </div>
+
+<ModalCategory @ref="modal" Save="SaveCategory" Category="Category"></ModalCategory>
 
 @if (categories == null)
 {
@@ -34,8 +36,6 @@ else if (categories.Count > 0)
                 {
                     <tr>
                         <td>@item.Name</td>
-                    </tr>
-                    <tr>
                         <td><button class="btn btn-primary">Edit</button></td>
                     </tr>
                 }
@@ -50,12 +50,29 @@ else
     </div>
 }
 
+
 @code {
     List<Category> categories;
+    ModalCategory modal;
+    public Category Category { get; set; } = new Category();
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(3000);
+        await Task.Delay(1000);
         categories = await _db.GetAllCategoriesAsync();
     }
+
+    void ShowModal() => modal.Show();
+
+    async Task SaveCategory(Category category)
+    {
+        await _db.CreateCategoryAsync(category);
+        modal.Hide();
+        categories = await _db.GetAllCategoriesAsync();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await Task.Delay(1000);
+    }
+
 }

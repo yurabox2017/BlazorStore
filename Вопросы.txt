@@ -1,0 +1,7 @@
+﻿Из дочерних компонентов к родителю
+Edit form => edit context или model
+bind-value bind-model
+получение данных с привязкой к userId
+inputtext или input
+
+можно использовать постоянно oninput
