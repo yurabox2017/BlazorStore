@@ -1,23 +1,28 @@
-﻿@if (popModal)
+﻿@inject IRepositoryCategory _db
+@if (popModal)
 {
     <div class="modal fade show" id="PopModalCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display:block" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Category</h5>
-                    <button type="button" class="close" @onclick="Hide" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input type="text" class="form-control" @bind="Category.Name" autofocus placeholder="Введите категорию" />
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="Hide" data-dismiss="modal">Close</button>
-                    <button type="button" @onclick="(()=> Save.InvokeAsync(Category))" class="btn btn-primary">Save changes</button>
+        <EditForm Model="@Category" OnValidSubmit="(()=> Save.InvokeAsync(Category))">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Category</h5>
+                        <button type="button" class="close" @onclick="Hide" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <input type="text" class="form-control" @bind="Category.Name" autofocus placeholder="Введите категорию" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Hide" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </EditForm>
     </div>
 }
 
@@ -26,14 +31,12 @@
     public bool popModal { get; set; } = false;
     [Parameter] public Category Category { get; set; }
     [Parameter] public EventCallback<Category> Save { get; set; }
+    [Parameter] public EventCallback<Category> Edit { get; set; }
 
-    public void Show()
-    {
-        popModal = true;
-        StateHasChanged();
-    }
+    public void Show() => popModal = true;
 
     public void Hide() => popModal = false;
+
 
 
 }

@@ -53,3 +53,12 @@ a, .btn-link {
     border: 2px groove #17a2b8;
     border-radius: 5px;
 }
+
+
+.modal {
+    background-color: #1a1a19e6;
+}
+
+button:active {
+    outline: none;
+}

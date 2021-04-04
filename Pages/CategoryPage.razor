@@ -7,11 +7,10 @@
         <h1 class="text-info">Category List</h1>
     </div>
     <div class="col-6 text-right">
-        <button @onclick="ShowModal" data-toggle="modal" data-target="#PopModalCategory" class="btn btn-info">Add New Category</button>
+        <button @onclick="SaveCategory" data-toggle="modal" data-target="#PopModalCategory" class="btn btn-info">Add New Category</button>
     </div>
 </div>
 
-<ModalCategory @ref="modal" Save="SaveCategory" Category="Category"></ModalCategory>
 
 @if (categories == null)
 {
@@ -36,7 +35,12 @@ else if (categories.Count > 0)
                 {
                     <tr>
                         <td>@item.Name</td>
-                        <td><button class="btn btn-primary">Edit</button></td>
+                        <td class="text-right">
+                            <div class="btn-group">
+                                <button @onclick="(()=> EditCategory(item))" class="btn btn-outline-primary">Edit</button>
+                                <button @onclick="(()=> DeleteCategory(item))" class="btn btn-outline-danger">Delete</button>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -50,29 +54,88 @@ else
     </div>
 }
 
+@if (popModal)
+{
+    <div class="modal fade show" id="PopModalCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display:block" aria-hidden="true">
+        <EditForm Model="@categoryObj" OnValidSubmit="@ValidSubmit">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title text-info" id="exampleModalLongTitle">@(!categoryObj.Id.Equals(0) ? "Update" : "Create") Category</h3>
+                        <button type="button" class="close" @onclick="ShowClose" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <input type="text" class="form-control" @bind="categoryObj.Name" autofocus placeholder="Введите категорию" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="ShowClose" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+}
+
 
 @code {
     List<Category> categories;
-    ModalCategory modal;
-    public Category Category { get; set; } = new Category();
+    bool popModal { get; set; } = false;
+
+    Category categoryObj = new();
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(1000);
         categories = await _db.GetAllCategoriesAsync();
     }
 
-    void ShowModal() => modal.Show();
+    public void ShowClose() => popModal = !popModal;
 
-    async Task SaveCategory(Category category)
+    async Task SaveCategory()
     {
-        await _db.CreateCategoryAsync(category);
-        modal.Hide();
-        categories = await _db.GetAllCategoriesAsync();
+        categoryObj = new();
+        categoryObj.Id = 0;
+
+        ShowClose();
     }
     protected override async Task OnParametersSetAsync()
     {
         await Task.Delay(1000);
+    }
+
+    async Task EditCategory(Category catForEdit)
+    {
+        categoryObj = catForEdit;
+        ShowClose();
+
+    }
+
+    async Task DeleteCategory(Category catForEdit)
+    {
+        var result = false;
+
+        result = await _db.DeleteCategoryAsync(catForEdit.Id);
+        categories.Clear();
+        categories = await _db.GetAllCategoriesAsync();
+
+    }
+
+    async Task ValidSubmit()
+    {
+        var result = false;
+
+        ShowClose();
+        if (categoryObj.Id.Equals(0))
+            result = await _db.CreateCategoryAsync(categoryObj);
+        else
+            result = await _db.UpdateCategoryAsync(categoryObj);
+
+        categories = await _db.GetAllCategoriesAsync();
+
     }
 
 }
