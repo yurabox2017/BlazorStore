@@ -1,6 +1,7 @@
 using BlazorStore.Areas.Identity;
 using BlazorStore.Data;
 using BlazorStore.Data.Repository;
+using BlazorStore.Data.Repository.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -43,6 +44,7 @@ namespace BlazorStore
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<WeatherForecastService>();
             services.AddTransient<IRepositoryCategory, DbCategoryRepository>();
+            services.AddTransient<IRepositoryGoodsMarker, DbGoodsMarkerRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

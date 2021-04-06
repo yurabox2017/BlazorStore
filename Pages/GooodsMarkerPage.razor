@@ -1,18 +1,17 @@
-﻿@page "/category"
+﻿@page "/goodsMarker"
 
-@inject IRepositoryCategory _db
+@inject IRepositoryGoodsMarker _db
 
 <div class="component-title row justify-content-between align-items-center">
     <div class="col-6">
-        <h1 class="text-info">Category List</h1>
+        <h1 class="text-info">GoodsMarker List</h1>
     </div>
     <div class="col-6 text-right">
-        <button @onclick="SaveCategory" data-toggle="modal" data-target="#PopModalCategory" class="btn btn-info">Add New Category</button>
+        <button @onclick="SaveGoodsMarker" data-toggle="modal" data-target="#PopModalGoodsMarker" class="btn btn-info">Add New Goods Marker</button>
     </div>
 </div>
 
-
-@if (categories == null)
+@if (goodsMarkers == null)
 {
 
     <div class="row">
@@ -20,7 +19,7 @@
     </div>
 
 }
-else if (categories.Count > 0)
+else if (goodsMarkers.Count > 0)
 {
     <div class="row table-responsive">
         <table class="table table-striped">
@@ -31,13 +30,13 @@ else if (categories.Count > 0)
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in categories)
+                @foreach (var item in goodsMarkers)
                 {
                     <tr>
                         <td>@item.Name</td>
                         <td class="text-right">
                             <div class="btn-group">
-                                <button @onclick="(()=> EditCategory(item))" class="btn btn-outline-primary">Edit</button>
+                                <button @onclick="(()=> EditGoodsMarker(item))" class="btn btn-outline-primary">Edit</button>
                                 <button @onclick="(()=> DeleteCategory(item))" class="btn btn-outline-danger">Delete</button>
                             </div>
                         </td>
@@ -56,12 +55,12 @@ else
 
 @if (popModal)
 {
-    <div class="modal fade show" id="PopModalCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display:block" aria-hidden="true">
-        <EditForm Model="@categoryObj" OnValidSubmit="@ValidSubmit">
+    <div class="modal fade show" id="PopModalGoodsMarker" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display:block" aria-hidden="true">
+        <EditForm Model="@goodsMarkerObj" OnValidSubmit="@ValidSubmit">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title text-info" id="exampleModalLongTitle">@(!categoryObj.Id.Equals(0) ? "Update" : "Create") Category</h3>
+                        <h3 class="modal-title text-info" id="exampleModalLongTitle">@(!goodsMarkerObj.Id.Equals(0) ? "Update" : "Create") Goods Marker</h3>
                         <button type="button" class="close" @onclick="ShowClose" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -69,7 +68,7 @@ else
                     <div class="modal-body">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
-                        <input type="text" class="form-control" @bind="categoryObj.Name" autofocus placeholder="Введите категорию" />
+                        <input type="text" class="form-control" @bind="goodsMarkerObj.Name" autofocus placeholder="Введите Специальный тэг" />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @onclick="ShowClose" data-dismiss="modal">Close</button>
@@ -81,42 +80,37 @@ else
     </div>
 }
 
-
 @code {
-    List<Category> categories;
-    bool popModal { get; set; } = false;
 
-    Category categoryObj = new();
+    public List<GoodsMarker> goodsMarkers;
+    public GoodsMarker goodsMarkerObj = new();
+    bool popModal { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
-        categories = await _db.GetAllCategoriesAsync();
+        goodsMarkers = await _db.GetAllGoodsMarkersAsync();
     }
 
-    public void ShowClose() => popModal = !popModal;
-
-    async Task SaveCategory()
+    void SaveGoodsMarker()
     {
-        categoryObj = new();
-        categoryObj.Id = 0;
-
-        ShowClose();
-    }
-
-    async Task EditCategory(Category catForEdit)
-    {
-        categoryObj = catForEdit;
+        goodsMarkerObj = new();
+        goodsMarkerObj.Id = 0;
         ShowClose();
 
     }
+    async Task EditGoodsMarker(GoodsMarker markForEdit)
+    {
+        goodsMarkerObj = markForEdit;
+        ShowClose();
 
-    async Task DeleteCategory(Category catForEdit)
+    }
+    async Task DeleteCategory(GoodsMarker markForEdit)
     {
         var result = false;
 
-        result = await _db.DeleteCategoryAsync(catForEdit.Id);
-        categories.Clear();
-        categories = await _db.GetAllCategoriesAsync();
+        result = await _db.DeleteGoodsMarkerAsync(markForEdit.Id);
+        goodsMarkers.Clear();
+        goodsMarkers = await _db.GetAllGoodsMarkersAsync();
 
     }
 
@@ -124,14 +118,18 @@ else
     {
         var result = false;
 
-        ShowClose();
-        if (categoryObj.Id.Equals(0))
-            result = await _db.CreateCategoryAsync(categoryObj);
+        if (goodsMarkerObj.Id.Equals(0))
+            result = await _db.CreateGoodsMarkerAsync(goodsMarkerObj);
         else
-            result = await _db.UpdateCategoryAsync(categoryObj);
+            result = await _db.UpdateGoodsMarkerAsync(goodsMarkerObj);
+        if (result)
+            ShowClose();
 
-        categories = await _db.GetAllCategoriesAsync();
+        goodsMarkers = await _db.GetAllGoodsMarkersAsync();
 
     }
+
+
+    void ShowClose() => popModal = !popModal;
 
 }
