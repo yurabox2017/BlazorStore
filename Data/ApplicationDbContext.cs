@@ -17,5 +17,6 @@ namespace BlazorStore.Data
         }
         public DbSet<Category> Categories { get; set; }
         public DbSet<GoodsMarker> GoodsMarkers { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }

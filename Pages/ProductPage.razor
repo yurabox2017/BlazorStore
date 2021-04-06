@@ -1,0 +1,180 @@
+﻿@page "/product"
+@using BlazorInputFile
+@using System.IO
+
+@inject IRepositoryProduct _db
+
+<div class="component-title row justify-content-between align-items-center">
+    <div class="col-6">
+        <h1 class="text-info">Category List</h1>
+    </div>
+    <div class="col-6 text-right">
+        <button @onclick="SaveCategory" data-toggle="modal" data-target="#PopModalCategory" class="btn btn-info">Add New Category</button>
+    </div>
+</div>
+
+
+@if (categories == null)
+{
+
+    <div class="row">
+        <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/108183/screenshots/5331825/loading_xxi.gif" /></div>
+    </div>
+
+}
+else if (categories.Count > 0)
+{
+    <div class="row table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in categories)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td class="text-right">
+                            <div class="btn-group">
+                                <button @onclick="(()=> EditCategory(item))" class="btn btn-outline-primary">Edit</button>
+                                <button @onclick="(()=> DeleteCategory(item))" class="btn btn-outline-danger">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/1231865/screenshots/11157048/media/bc9427646c632ded563ee076fdc5dfda.jpg?compress=1&resize=800x600" /></div>
+    </div>
+}
+
+@if (popModal)
+{
+    <div class="modal fade show" id="PopModalCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display:block" aria-hidden="true">
+        <EditForm Model="@categoryObj" OnValidSubmit="@ValidSubmit">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title text-info" id="exampleModalLongTitle">@(!categoryObj.Id.Equals(0) ? "Update" : "Create") Category</h3>
+                        <button type="button" class="close" @onclick="ShowClose" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <input type="text" class="form-control" @bind="categoryObj.Name" autofocus placeholder="Введите категорию" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="ShowClose" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+}
+
+
+@code {
+    List<Category> categories;
+    List<Product> products;
+    public byte[] ImageUploaded { get; set; }
+
+    bool popModal { get; set; } = false;
+
+    Product productObj = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await _db.GetAllProductsAsync();
+    }
+
+    public void ShowClose() => popModal = !popModal;
+
+    async Task SaveProduct()
+    {
+        productObj = new();
+        productObj.Id = 0;
+
+        categories = await _db.GetAllCategories();
+        productObj.CategoryId = categories.ToList()[0].Id;
+
+        ShowClose();
+    }
+
+    async Task EditProduct(Product prodObj)
+    {
+        productObj = prodObj;
+
+        categories = await _db.GetAllCategories();
+
+        ShowClose();
+    }
+
+    async Task DeleteProduct(Product prodForEdit)
+    {
+        var result = false;
+
+        result = await _db.DeleteProductAsync(prodForEdit.Id);
+        products.Clear();
+        products = await _db.GetAllProductsAsync();
+
+    }
+
+    async Task ValidSubmit()
+    {
+        var result = false;
+
+        ShowClose();
+
+        if (ImageUploaded is not null)
+        {
+            productObj.Image = ImageUploaded;
+
+            ImageUploaded = null;
+        }
+
+        if (productObj.Id.Equals(0))
+            result = await _db.CreateProductAsync(productObj);
+        else
+            result = await _db.UpdateProductAsync(productObj);
+
+        products = await _db.GetAllProductsAsync();
+
+    }
+
+    async Task HandleSelection(IFileListEntry[] fileListEntry)
+    {
+        var file = fileListEntry.FirstOrDefault();
+        if (file is not null)
+        {
+            MemoryStream ms = new();
+
+            await file.Data.CopyToAsync(ms);
+
+            ImageUploaded = ms.ToArray();
+        }
+
+    }
+
+    string ImageToDisplayConverter(byte[] image)
+    {
+        if (image is null)
+            return "";
+
+        var base64 = Convert.ToBase64String(image);
+        var finalString = string.Format("data:image/jpg;base64,{0}", base64);
+        return finalString;
+
+    }
+
+}
