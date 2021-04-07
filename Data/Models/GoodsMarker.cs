@@ -9,7 +9,7 @@ namespace BlazorStore.Data.Models
     public class GoodsMarker
     {
         public int Id { get; set; }
-        [Required]
+        //[Required]
         [MinLength(2), MaxLength(20)]
         public string Name { get; set; }
     }

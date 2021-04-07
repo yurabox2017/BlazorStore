@@ -43,7 +43,7 @@ else if (products.Count > 0)
                         <td>@item.Category.Name</td>
                         <td>@item.Price</td>
                         <td>@item.ShadeColor</td>
-                        <td>@ImageToDisplayConverter(item.Image)</td>
+                        @*<td>@ImageToDisplayConverter(item.Image)</td>*@
                         <td class="text-right">
                             <div class="btn-group">
                                 <button @onclick="(()=> EditProduct(item))" class="btn btn-outline-primary">Edit</button>
@@ -78,32 +78,65 @@ else
                     <div class="modal-body">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
-                        <div class="row align-items-center">
-                            <div class="col-3">Product Name</div>
-                            <div class="col-4"><input type="text" class="form-control" @bind="productObj.Name" autofocus /></div>
-                        </div>
-                        <div class="row align-items-center mt-4">
-                            <div class="col-3">Category Name</div>
-
-                        </div>
-                        <div class="row align-items-center mt-4">
-                            <div class="col-3">Price</div>
-                            <div class="col-4"><input type="text" class="form-control" @bind="productObj.Price" autofocus /></div>
-                        </div>
-                        <div class="row align-items-center mt-4">
-                            <div class="col-3">Shade Color</div>
-                            <div class="col-4"><input type="text" class="form-control" @bind="productObj.ShadeColor" autofocus /></div>
-                        </div>
-                        <div class="row align-items-center mt-4">
-                            <div class="col-3">Image</div>
-                            <div class="col-4 align-items-center">
-                                <BlazorInputFile.InputFile OnChange="HandleSelection"></BlazorInputFile.InputFile>
+                        <div class="row mb-4">
+                            <div class="col-9">
+                                <div class="row align-items-center">
+                                    <div class="col-4">Product Name</div>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" @bind="productObj.Name" autofocus />
+                                        <ValidationMessage For="@(() => productObj.Name)"></ValidationMessage>
+                                    </div>
+                                    
+                                </div>
+                                <div class="row align-items-center mt-4">
+                                    <div class="col-4">Category Name</div>
+                                    <div class="col-8">
+                                        <select @onchange='(args => SelectionChanged("Category", args))' class="form-control">
+                                            <option selected>Select Category</option>
+                                            @foreach (var item in categories)
+                                            {
+                                                <option value="@item.Id" selected="@(item.Id == productObj.CategoryId ? true : false)">@item.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                @*<div class="row align-items-center mt-4">
+                                        <div class="col-3">Goods Marker Name</div>
+                                        <div class="col-4">
+                                            <select @onchange='(args => SelectionChanged("GoodsMarker", args))' class="form-control">
+                                                @foreach (var item in goodsMarkers)
+                                                {
+                                                    <option value="@item.Id" selected="@(item.Id == productObj.CategoryId ? true : false)">@item.Name</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>*@
+                                <div class="row align-items-center mt-4">
+                                    <div class="col-4">Price</div>
+                                    <div class="col-8">
+                                        <input type="number" class="form-control" @bind="productObj.Price" autofocus />
+                                        <ValidationMessage For="@(() => productObj.Price)"></ValidationMessage>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center mt-4">
+                                    <div class="col-4">Shade Color</div>
+                                    <div class="col-8"><input type="text" class="form-control" @bind="productObj.ShadeColor" autofocus /></div>
+                                </div>
+                                <div class="row align-items-center mt-4">
+                                    <div class="col-4">Image</div>
+                                    <div class="col-8 align-items-center">
+                                        <BlazorInputFile.InputFile OnChange="HandleSelection"></BlazorInputFile.InputFile>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <img style="width:100%" src="@ImageToDisplayConverter(productObj.Image)" />
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="ShowClose" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="ShowClose" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -114,6 +147,7 @@ else
 
 @code {
     List<Category> categories;
+    List<GoodsMarker> goodsMarkers;
     List<Product> products;
     public byte[] ImageUploaded { get; set; }
 
@@ -134,6 +168,7 @@ else
         productObj.Id = 0;
 
         categories = await _db.GetAllCategories();
+        goodsMarkers = await _db.GetAllGoodsMarkers();
         productObj.CategoryId = categories.ToList()[0].Id;
 
         ShowClose();
@@ -205,4 +240,23 @@ else
 
     }
 
+    void SelectionChanged(string name, ChangeEventArgs args)
+    {
+        switch (name)
+        {
+            case "Category":
+                if (int.TryParse(args.Value.ToString(), out int CategoryId))
+                {
+                    productObj.CategoryId = CategoryId;
+                }
+                break;
+            case "GoodsMarker":
+                //if (int.TryParse(args.Value.ToString(), out int GoodsMarkerId))
+                //{
+                //    productObj.GoodsMarkerId = GoodsMarkerId;
+                //}
+                break;
+        }
+
+    }
 }

@@ -13,14 +13,17 @@ namespace BlazorStore.Data.Models
         [Required]
         [MinLength(2), MaxLength(100)]
         public string Name { get; set; }
+        [Required]
+        [Range(1, 1000000)]
         public double Price { get; set; }
         public byte[] Image { get; set; }
         public string ShadeColor { get; set; }
+        [Required]
         public int CategoryId { get; set; }
         [ForeignKey(nameof(CategoryId))]
         public virtual Category Category { get; set; }
-        public int GoodsMarkerId { get; set; }
-        [ForeignKey(nameof(GoodsMarkerId))]
-        public virtual GoodsMarker GoodsMarker { get; set; }
+        //public int GoodsMarkerId { get; set; }
+        //[ForeignKey(nameof(GoodsMarkerId))]
+        //public virtual GoodsMarker GoodsMarker { get; set; }
     }
 }
