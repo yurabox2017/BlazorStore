@@ -32,9 +32,9 @@ namespace BlazorStore.Data.Repository.Services
             return true;
         }
 
-        public async Task<List<Product>> GetAllProductsAsync() => await _db.Products.Include(x => x.Category).Include(x => x.GoodsMarker).ToListAsync();
+        public async Task<List<Product>> GetAllProductsAsync() => await _db.Products.Include(x => x.Category).ToListAsync();
 
-        public async Task<Product> GetSingleProductAsync(int id) => await _db.Products.Include(x => x.Category).Include(x => x.GoodsMarker).FirstOrDefaultAsync(x => x.Id.Equals(id));
+        public async Task<Product> GetSingleProductAsync(int id) => await _db.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.Id.Equals(id));
 
 
         public async Task<bool> UpdateProductAsync(Product product)
@@ -53,9 +53,8 @@ namespace BlazorStore.Data.Repository.Services
             return true;
         }
 
-        public async Task<List<Category>> GetAllCategories()
-        {
-            return await _db.Categories.ToListAsync();
-        }
+        public async Task<List<Category>> GetAllCategories() => await _db.Categories.ToListAsync();
+        public async Task<List<GoodsMarker>> GetAllGoodsMarkers() => await _db.GoodsMarkers.ToListAsync();
+
     }
 }
