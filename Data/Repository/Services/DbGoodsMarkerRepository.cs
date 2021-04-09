@@ -16,7 +16,7 @@ namespace BlazorStore.Data.Repository.Services
         {
             if (goodsMarker is null)
                 return false;
-            await _db.AddAsync(goodsMarker);
+            await _db.GoodsMarkers.AddAsync(goodsMarker);
             await _db.SaveChangesAsync();
             return true;
 
