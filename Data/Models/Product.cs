@@ -22,8 +22,10 @@ namespace BlazorStore.Data.Models
         public int CategoryId { get; set; }
         [ForeignKey(nameof(CategoryId))]
         public virtual Category Category { get; set; }
-        //public int GoodsMarkerId { get; set; }
-        //[ForeignKey(nameof(GoodsMarkerId))]
-        //public virtual GoodsMarker GoodsMarker { get; set; }
+        public int GoodsMarkerId { get; set; }
+        [ForeignKey(nameof(GoodsMarkerId))]
+        public virtual GoodsMarker GoodsMarker { get; set; }
+        public int AppointmentsId { get; set; }
+        public virtual List<Appointment>  Appointments { get; set; }
     }
 }

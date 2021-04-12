@@ -1,0 +1,10 @@
+﻿@inject IRepositoryAppointment _db
+
+@code {
+    List<Appointment> appointments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        appointments = await _db.GetAllAppointmentsAsync();
+    }
+}

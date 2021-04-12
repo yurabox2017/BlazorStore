@@ -46,6 +46,7 @@ namespace BlazorStore
             services.AddTransient<IRepositoryCategory, DbCategoryRepository>();
             services.AddTransient<IRepositoryGoodsMarker, DbGoodsMarkerRepository>();
             services.AddTransient<IRepositoryProduct, DbProductRepository>();
+            services.AddTransient<IRepositoryAppointment, DbAppointmentRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
