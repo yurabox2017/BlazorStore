@@ -1,0 +1,35 @@
+﻿@page "/details/{ProductId:int}"
+@inject IRepositoryProduct _db
+
+<h1 class="text-info mt-2">@(showAppointment ? "Book Appoinment" : "Appointment Details")</h1>
+
+@if (AppointmentObj.Product is not null)
+{
+    @if (showAppointment)
+    {
+        @*TODO: Show Appointment Component*@ }
+    else
+    {
+        <DetailsComponent OnShowAppointment="ShowAppointment" Appointment="AppointmentObj" />
+    }
+}
+
+
+@code {
+    [Parameter] public int ProductId { get; set; }
+    public Appointment AppointmentObj { get; set; }
+
+    bool showAppointment = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppointmentObj = new()
+        {
+            AppointmentDate = DateTime.Now
+        };
+
+        AppointmentObj.Product = await _db.GetSingleProductAsync(ProductId);
+    }
+    void ShowAppointment() => showAppointment = true;
+    void ShowDetails() => showAppointment = false;
+}

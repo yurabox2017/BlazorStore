@@ -1,0 +1,43 @@
+﻿<div class="row p-4 border rounded">
+    <div class="col-8">
+        <div class="row form-group">
+            <div class="col-4">Name:</div>
+            <div class="col-8"><input class="form-control" readonly Value="@Appointment.Product.Name" /></div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">Shade Color:</div>
+            <div class="col-8"><input class="form-control" readonly Value="@Appointment.Product.ShadeColor" /></div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">Price:</div>
+            <div class="col-8"><input class="form-control" readonly Value="@Appointment.Product.Price" /> </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">Category Name:</div>
+            <div class="col-8"><input class="form-control" readonly Value="@Appointment.Product.Category.Name" /></div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4 offset-4"> <a href="/" class="btn btn-success form-control">Back to List</a></div>
+            <div class="col-4"><button @onclick="OnShowAppointment" class="btn btn-primary form-control"> Book Appointment</button></div>
+        </div>
+    </div>
+    <div class="col-3 offset-1">
+        <div><img class="img-fluid img-thumbnail" src="@ImageToDisplayConverter(Appointment.Product.Image)" /></div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Appointment Appointment { get; set; }
+    [Parameter] public EventCallback  OnShowAppointment { get; set; }
+
+    string ImageToDisplayConverter(byte[] image)
+    {
+        if (image is null)
+            return "";
+
+        var base64 = Convert.ToBase64String(image);
+        var finalString = string.Format("data:image/jpg;base64,{0}", base64);
+        return finalString;
+
+    }
+}

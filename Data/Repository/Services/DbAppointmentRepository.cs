@@ -31,9 +31,9 @@ namespace BlazorStore.Data.Repository.Services
             return true;
         }
 
-        public async Task<List<Appointment>> GetAllAppointmentsAsync() => await _db.Appointments.Include(x => x.Products).ToListAsync();
+        public async Task<List<Appointment>> GetAllAppointmentsAsync() => await _db.Appointments.Include(x => x.Product).ToListAsync();
 
-        public async Task<Appointment> GetSingleAppointmentAsync(int id) => await _db.Appointments.Include(x => x.Products).FirstOrDefaultAsync(x => x.Id.Equals(id));
+        public async Task<Appointment> GetSingleAppointmentAsync(int id) => await _db.Appointments.Include(x => x.Product).FirstOrDefaultAsync(x => x.Id.Equals(id));
 
         public async Task<bool> UpdateAppointmentAsync(Appointment appointment)
         {
