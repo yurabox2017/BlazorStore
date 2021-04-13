@@ -14,6 +14,9 @@ namespace BlazorStore.Data.Repository.Services
 
         public async Task<bool> CreateAppointmentAsync(Appointment appointment)
         {
+            appointment.ProductId = appointment.Product.Id;
+            appointment.Product = null;
+
             if (appointment is null)
                 return false;
             await _db.Appointments.AddAsync(appointment);

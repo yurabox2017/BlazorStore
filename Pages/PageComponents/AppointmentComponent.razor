@@ -1,9 +1,61 @@
-﻿<div class="row p-4 border rounded">
-    <div class="row form-group">
-        <div class="col-12"><button @onclick="OnShowDetails" class="btn btn-primary form-control">Go to Details</button></div>
+﻿@inherits OwningComponentBase<IRepositoryAppointment>
+@inject NavigationManager _navManager
+
+<div class="row p-4 border rounded">
+    <EditForm class="col-8" Model="@Appointment" OnValidSubmit="@ValidSubmit">
+
+        <div class="row form-group">
+            <div class="col-8 offset-4">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">Name:</div>
+            <div class="col-8"><InputText class="form-control" @bind-Value="@Appointment.CustomerName" /></div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">Email:</div>
+            <div class="col-8"><input type="email" class="form-control" @bind="@Appointment.Email" /></div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">Phone:</div>
+            <div class="col-8"><input type="tel" class="form-control" @bind="@Appointment.CustomerPhone" /> </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">Date:</div>
+            <div class="col-8"><InputDate class="form-control" @bind-Value="@Appointment.AppointmentDate" /></div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4 offset-4"><button @onclick="OnShowDetails" class="btn btn-primary form-control">Go to Details</button></div>
+            <div class="col-4"><button class="btn btn-success form-control">Book Now</button></div>
+        </div>
+    </EditForm>
+    <div class="col-3 offset-1">
+        <div><img class="img-fluid img-thumbnail" src="@ImageToDisplayConverter(Appointment.Product?.Image)" /></div>
     </div>
 </div>
 
+
 @code {
     [Parameter] public EventCallback OnShowDetails { get; set; }
+    [Parameter] public Appointment Appointment { get; set; }
+
+    async Task ValidSubmit()
+    {
+        var result = await Service.CreateAppointmentAsync(Appointment);
+
+        if (result)
+            _navManager.NavigateTo("appointmentbooked");
+    }
+    string ImageToDisplayConverter(byte[] image)
+    {
+        if (image is null)
+            return "";
+
+        var base64 = Convert.ToBase64String(image);
+        var finalString = string.Format("data:image/jpg;base64,{0}", base64);
+        return finalString;
+
+    }
 }

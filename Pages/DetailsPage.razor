@@ -7,8 +7,8 @@
 {
     @if (showAppointment)
     {
-        <AppointmentComponent  OnShowDetails="ShowDetails" />
- }
+        <AppointmentComponent Appointment="AppointmentObj" OnShowDetails="ShowDetails" />
+    }
     else
     {
         <DetailsComponent OnShowAppointment="ShowAppointment" Appointment="AppointmentObj" />
