@@ -1,5 +1,9 @@
-﻿<h3>AppointmentComponent</h3>
+﻿<div class="row p-4 border rounded">
+    <div class="row form-group">
+        <div class="col-12"><button @onclick="OnShowDetails" class="btn btn-primary form-control">Go to Details</button></div>
+    </div>
+</div>
 
 @code {
-
+    [Parameter] public EventCallback OnShowDetails { get; set; }
 }
