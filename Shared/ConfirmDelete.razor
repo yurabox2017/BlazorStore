@@ -1,0 +1,16 @@
+﻿<div class="container col-6">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Уверены, что хотите удалить?</h4>
+        <p>Заказ будет удален без возможности восставновления</p>
+        <hr>
+        <div class="row form-group justify-content-end">
+            <div class="col-3"><button @onclick="(()=>Yes.InvokeAsync())" class="btn btn-danger form-control">Yes</button></div>
+            <div class="col-3"><button @onclick="(()=>No.InvokeAsync())" class="btn btn-secondary form-control">No</button></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback Yes { get; set; }
+    [Parameter] public EventCallback No { get; set; }
+}
