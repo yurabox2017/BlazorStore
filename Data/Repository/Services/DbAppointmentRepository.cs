@@ -40,7 +40,7 @@ namespace BlazorStore.Data.Repository.Services
 
         public async Task<bool> UpdateAppointmentAsync(Appointment appointment)
         {
-            var appointmentFromDb = await _db.Products.FindAsync(appointment.Id);
+            var appointmentFromDb = await _db.Appointments.FindAsync(appointment.Id);
             if (appointmentFromDb is null)
                 return false;
 

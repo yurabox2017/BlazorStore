@@ -9,7 +9,7 @@
     </div>
 }
 else if (appointments.Count > 0)
-{@if (!IsConfirm)
+{@if (!IsConfirmDelete)
     {
 
         <div class="row table-responsive">
@@ -32,7 +32,7 @@ else if (appointments.Count > 0)
                             <td>@item.CustomerPhone</td>
                             <td>@item.Email</td>
                             <td>@item.AppointmentDate</td>
-                            <td>@item.IsConfirmed</td>
+                            <td>@(item.IsConfirmed ? "Yes": "No")</td>
                             <td class="text-right">
                                 <div class="btn-group">
                                     <button @onclick="(() => Confirm(item))" class="btn btn-outline-primary">Confirm</button>
@@ -47,7 +47,27 @@ else if (appointments.Count > 0)
     }
     else
     {
-        <ConfirmDelete Yes="SubmitDelete" No="No"></ConfirmDelete>
+        <div class="modal fade show" id="PopModalConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display:block" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title text-danger" id="exampleModalLongTitle">Уверены, что хотите удалить?</h3>
+                        <button type="button" class="close" @onclick="ShowHideConfirmDelte" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="text-dark">Заказ будет удален без возможности восставновления</h4>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div><button @onclick="No" class="btn btn-secondary form-control">No</button></div>
+                        <button type="button" class="btn btn-danger" @onclick="SubmitDelete" data-dismiss="modal">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 }
 else
@@ -59,25 +79,32 @@ else
 
 @code {
     List<Appointment> appointments;
-    bool IsConfirm = false;
+    bool IsConfirmDelete = false;
     Appointment SelectedAppointment;
 
     protected override async Task OnInitializedAsync()
     {
         appointments = await _db.GetAllAppointmentsAsync();
     }
-    void Confirm(Appointment appointment)
+    async Task Confirm(Appointment appointment)
     {
+        appointment.IsConfirmed = true;
+        await _db.UpdateAppointmentAsync(appointment);
 
     }
     void Delete(Appointment appointment)
     {
         SelectedAppointment = appointment;
-        IsConfirm = true;
+        ShowHideConfirmDelte();
     }
     async Task SubmitDelete()
     {
-        await _db.DeleteAppointmentAsync(SelectedAppointment.Id);
+        var result = false;
+        result = await _db.DeleteAppointmentAsync(SelectedAppointment.Id);
+        appointments = await _db.GetAllAppointmentsAsync();
+        if (result)
+            ShowHideConfirmDelte();
     }
-    void No() => IsConfirm = false;
+    void ShowHideConfirmDelte() => IsConfirmDelete = !IsConfirmDelete;
+    void No() => ShowHideConfirmDelte();
 }
