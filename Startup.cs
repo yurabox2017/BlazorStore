@@ -5,6 +5,7 @@ using BlazorStore.Data.Repository.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
@@ -47,6 +48,8 @@ namespace BlazorStore
             services.AddTransient<IRepositoryGoodsMarker, DbGoodsMarkerRepository>();
             services.AddTransient<IRepositoryProduct, DbProductRepository>();
             services.AddTransient<IRepositoryAppointment, DbAppointmentRepository>();
+            services.AddTransient<ProtectedLocalStorage>();
+            services.AddAuthentication("Identity.Application").AddCookie();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

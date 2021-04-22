@@ -1,5 +1,6 @@
 ﻿@page "/details/{ProductId:int}"
 @inject IRepositoryProduct _db
+@inject ProtectedLocalStorage _cartStorage
 
 <h1 class="text-info mt-2">@(showAppointment ? "Book Appoinment" : "Appointment Details")</h1>
 
@@ -11,14 +12,19 @@
     }
     else
     {
-        <DetailsComponent OnShowAppointment="ShowAppointment" Appointment="AppointmentObj" />
+        <DetailsComponent OnAddToCart="AddToCart" Appointment="AppointmentObj" />
     }
+    @productCount
 }
 
 
 @code {
     [Parameter] public int ProductId { get; set; }
     public Appointment AppointmentObj { get; set; }
+    List<int> listOfShopingCart = new();
+    int productCount = 0;
+    List<int> shopingCardList = new();
+
 
     bool showAppointment = false;
 
@@ -31,6 +37,24 @@
 
         AppointmentObj.Product = await _db.GetSingleProductAsync(ProductId);
     }
-    void ShowAppointment() => showAppointment = true;
+    void OnAddToCart() => showAppointment = true;
     void ShowDetails() => showAppointment = false;
+
+    async Task AddToCart()
+    {
+        if (listOfShopingCart is not null)
+            listOfShopingCart.Add(ProductId);
+
+        await _cartStorage.SetInSession(StaticData.SessionKey, listOfShopingCart);
+
+        shopingCardList = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+        if (shopingCardList is not null)
+            productCount = shopingCardList.Count;
+
+        StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        listOfShopingCart = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+    }
 }

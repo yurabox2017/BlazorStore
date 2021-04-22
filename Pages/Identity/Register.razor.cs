@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BlazorStore.Pages.Identity
 {
@@ -65,7 +66,7 @@ namespace BlazorStore.Pages.Identity
 
         async Task Registration()
         {
-            //returnUrl ??= Url.Content("~/");
+            ReturnUrl = NavigationManager.BaseUri;
             ExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, LastName = Input.LastName, FirstName = Input.FirstName, Address = Input.Address };
@@ -83,13 +84,14 @@ namespace BlazorStore.Pages.Identity
                 //   values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
                 //   protocol: Request.Scheme);
 
+
+
                 await EmailSender.SendEmailAsync(Input.Email, "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                 if (UserManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    NavigationManager.NavigateTo("/confirmregistration/Input.Email/ReturnUrl");
-                    // return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                    NavigationManager.NavigateTo($"/confirmregistration/{Input.Email}");
                 }
                 else
                 {

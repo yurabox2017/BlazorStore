@@ -1,4 +1,6 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inject ProtectedLocalStorage _cartStorage
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">BlazorStore</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -48,10 +50,13 @@
             </NavLink>
         </li>
     </ul>
+    <div class="text-white">ShopingCartCount: @productCount</div>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+    int productCount = 0;
+    List<int> shopingCardList = new();
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -59,4 +64,14 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        shopingCardList = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+        if (shopingCardList is not null)
+            productCount = shopingCardList.Count;
+        StateHasChanged();
+
+    }
+
 }

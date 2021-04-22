@@ -18,7 +18,7 @@
         </div>
         <div class="row form-group">
             <div class="col-4 offset-4"> <a href="/" class="btn btn-success form-control">Back to List</a></div>
-            <div class="col-4"><button @onclick="OnShowAppointment" class="btn btn-primary form-control"> Book Appointment</button></div>
+            <div class="col-4"><button @onclick="OnAddToCart" class="btn btn-primary form-control"> Add To Cart</button></div>
         </div>
     </div>
     <div class="col-3 offset-1">
@@ -28,7 +28,7 @@
 
 @code {
     [Parameter] public Appointment Appointment { get; set; }
-    [Parameter] public EventCallback  OnShowAppointment { get; set; }
+    [Parameter] public EventCallback OnAddToCart { get; set; }
 
     string ImageToDisplayConverter(byte[] image)
     {
