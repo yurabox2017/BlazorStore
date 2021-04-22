@@ -2,44 +2,41 @@
 
 <div class="row">
     <div class="col-md-4">
-        <EditForm Model="Input">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <h4>Create a new account.</h4>
-            <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Input.Email"></label>
-                <InputText @bind-Value="@Input.Email" class="form-control" />
-                <ValidationMessage For="@(() => Input.Email)"></ValidationMessage>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.Password"></label>
-                <input asp-for="Input.Password" class="form-control" />
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.ConfirmPassword"></label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" />
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.LastName"></label>
-                <input asp-for="Input.LastName" class="form-control" />
-                <span asp-validation-for="Input.LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.FirstName"></label>
-                <input asp-for="Input.FirstName" class="form-control" />
-                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Input.Address"></label>
-                <input asp-for="Input.Address" class="form-control" />
-                <span asp-validation-for="Input.Address" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </EditForm>
+        @if (Input is not null)
+        {
+            <EditForm Model="Input" OnValidSubmit="@Registration">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <h4>Create a new account.</h4>
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <input type="email" placeholder="Email" class="form-control" @bind="@Input.Email" />
+                    <ValidationMessage For="@(() => Input.Email)"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="password" placeholder="Password" @bind="@Input.Password" />
+                    <ValidationMessage For="@(() => Input.Password)"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="password" placeholder="ConfirmPassword" @bind="@Input.ConfirmPassword" />
+                    <ValidationMessage For="@(() => Input.ConfirmPassword)"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <InputText class="form-control" placeholder="LastName" @bind-Value="@Input.LastName"></InputText>
+                    <ValidationMessage For="@(() => Input.LastName)"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <InputText class="form-control" placeholder="FirstName" @bind-Value="@Input.FirstName"></InputText>
+                    <ValidationMessage For="@(() => Input.FirstName)"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <InputText class="form-control" placeholder="Address" @bind-Value="@Input.Address"></InputText>
+                    <ValidationMessage For="@(() => Input.Address)"></ValidationMessage>
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </EditForm>
+        }
     </div>
     <div class="col-md-6 col-md-offset-2">
         <section>
@@ -73,7 +70,3 @@
     </div>
 </div>
 
-@code {
-
-
-}
