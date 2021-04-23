@@ -48,8 +48,7 @@ namespace BlazorStore
             services.AddTransient<IRepositoryGoodsMarker, DbGoodsMarkerRepository>();
             services.AddTransient<IRepositoryProduct, DbProductRepository>();
             services.AddTransient<IRepositoryAppointment, DbAppointmentRepository>();
-            services.AddTransient<ProtectedLocalStorage>();
-            services.AddAuthentication("Identity.Application").AddCookie();
+            //services.AddProtectedBrowserStorage();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

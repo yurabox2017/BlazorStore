@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -10,10 +11,10 @@ namespace BlazorStore.Extensions
         {
             await session.SetAsync(key, JsonSerializer.Serialize(value));
         }
-        public static async Task<T> GetFromSession<T>(this ProtectedLocalStorage session, string key)
+        public static async Task<string> GetFromSession<T>(this ProtectedLocalStorage session, string key)
         {
-            ProtectedBrowserStorageResult<string> value = await session.GetAsync<string>(key);
-            return value.Value == null ? default : JsonSerializer.Deserialize<T>(value.Value);
+            var value = await session.GetAsync<string>(key);
+            return value.Value == null ? default : value.Value;
         }
     }
 }

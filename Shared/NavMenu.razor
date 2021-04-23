@@ -50,13 +50,14 @@
             </NavLink>
         </li>
     </ul>
-    <div class="text-white">ShopingCartCount: @productCount</div>
+    <div class="text-white">ShopingCartCount: @test</div>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
     int productCount = 0;
     List<int> shopingCardList = new();
+    string test;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -67,7 +68,8 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        shopingCardList = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+        test = await _cartStorage.GetFromSession<string>(StaticData.SessionKey);
+        // shopingCardList = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
         if (shopingCardList is not null)
             productCount = shopingCardList.Count;
         StateHasChanged();
