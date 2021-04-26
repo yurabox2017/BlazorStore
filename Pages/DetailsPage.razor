@@ -42,8 +42,7 @@
         if (listOfShopingCart is null)
             listOfShopingCart = new();
 
-        if (listOfShopingCart is not null)
-            listOfShopingCart.Add(ProductId);
+        listOfShopingCart.Add(ProductId);
 
         await _cartStorage.SetInSession<List<int>>(StaticData.SessionKey, listOfShopingCart);
 
