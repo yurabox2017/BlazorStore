@@ -25,5 +25,7 @@ namespace BlazorStore.Data.Models
         public int GoodsMarkerId { get; set; }
         [ForeignKey(nameof(GoodsMarkerId))]
         public virtual GoodsMarker GoodsMarker { get; set; }
+        [NotMapped]
+        public int Quantity { get; set; }
     }
 }
