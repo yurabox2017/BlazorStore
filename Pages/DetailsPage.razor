@@ -14,7 +14,6 @@
     {
         <DetailsComponent OnAddToCart="AddToCart" Appointment="AppointmentObj" />
     }
-    @test
 }
 
 
@@ -23,8 +22,6 @@
     public Appointment AppointmentObj { get; set; }
     List<int> listOfShopingCart = new();
     int productCount = 0;
-    string test;
-    List<string> testList = new();
 
     bool showAppointment = false;
 
@@ -42,19 +39,23 @@
 
     async Task AddToCart()
     {
-        //  test = await _cartStorage.GetFromSession<string>(StaticData.SessionKey);
-        test = await _cartStorage.GetFromSession<string>(StaticData.SessionKey);
-        testList.Add(test);
+        if (listOfShopingCart is null)
+            listOfShopingCart = new();
 
         if (listOfShopingCart is not null)
             listOfShopingCart.Add(ProductId);
-        await _cartStorage.SetInSession<string>(StaticData.SessionKey, testList);
+
+        await _cartStorage.SetInSession<List<int>>(StaticData.SessionKey, listOfShopingCart);
+
+
+        if (listOfShopingCart is not null)
+            productCount = listOfShopingCart.Count;
 
         StateHasChanged();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        test = await _cartStorage.GetFromSession<string>(StaticData.SessionKey);
-        //listOfShopingCart = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+        listOfShopingCart = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+
     }
 }

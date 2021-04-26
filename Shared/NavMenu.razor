@@ -50,7 +50,7 @@
             </NavLink>
         </li>
     </ul>
-    <div class="text-white">ShopingCartCount: @test</div>
+    <div class="text-white">ShopingCartCount: @productCount</div>
 </div>
 
 @code {
@@ -68,8 +68,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        test = await _cartStorage.GetFromSession<string>(StaticData.SessionKey);
-        // shopingCardList = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+        shopingCardList = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
         if (shopingCardList is not null)
             productCount = shopingCardList.Count;
         StateHasChanged();
