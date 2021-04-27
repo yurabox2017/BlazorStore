@@ -1,6 +1,8 @@
 ﻿@page "/appointmentlist"
 
 @inject IRepositoryAppointment _db
+@attribute [Authorize(Roles = StaticData.AdminRole)] 
+    @*строго через запятую*@
 
 @if (appointments is null)
 {

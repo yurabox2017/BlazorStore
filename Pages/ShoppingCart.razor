@@ -96,8 +96,7 @@ else
     {
         listOfShoppingCart.Clear();
         listOfShoppingCart = await _cartStorage.DelFromSessionAsync<List<int>>(StaticData.SessionKey, product.Id);
-        products = new();
-        totalPrice = 0;
+
         if (listOfShoppingCart is not null)
             await LoadProducts();
         StateHasChanged();
@@ -115,38 +114,34 @@ else
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
-            listOfShoppingCart = new();
-            totalPrice = 0;
-            products = new();
-            listOfShoppingCart = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
-            if (listOfShoppingCart is not null)
-            {
-                await LoadProducts();
-                StateHasChanged();
-            }
-
-        }
+            await LoadProducts();
 
     }
     async Task LoadProducts()
     {
-        for (int i = 0; i < listOfShoppingCart.Count; i++)
+        listOfShoppingCart = new();
+        totalPrice = 0;
+        products = new();
+        listOfShoppingCart = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+        if (listOfShoppingCart is not null)
         {
-            var currentProduct = await _db.GetSingleProductAsync(listOfShoppingCart[i]);
-
-            if (products.Exists(x => x.Id.Equals(currentProduct.Id)))
-                products.FirstOrDefault(x => x.Id.Equals(currentProduct.Id)).Quantity++;
-            else
+            for (int i = 0; i < listOfShoppingCart.Count; i++)
             {
-                currentProduct.Quantity = 1;
-                products.Add(currentProduct);
-            }
-        }
-        products.ForEach(x =>
-        {
-            totalPrice += x.Price * x.Quantity;
-        });
+                var currentProduct = await _db.GetSingleProductAsync(listOfShoppingCart[i]);
 
+                if (products.Exists(x => x.Id.Equals(currentProduct.Id)))
+                    products.FirstOrDefault(x => x.Id.Equals(currentProduct.Id)).Quantity++;
+                else
+                {
+                    currentProduct.Quantity = 1;
+                    products.Add(currentProduct);
+                }
+            }
+            products.ForEach(x =>
+            {
+                totalPrice += x.Price * x.Quantity;
+            });
+        }
+        StateHasChanged();
     }
 }

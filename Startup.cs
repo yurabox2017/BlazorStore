@@ -37,7 +37,8 @@ namespace BlazorStore
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
@@ -48,7 +49,7 @@ namespace BlazorStore
             services.AddTransient<IRepositoryGoodsMarker, DbGoodsMarkerRepository>();
             services.AddTransient<IRepositoryProduct, DbProductRepository>();
             services.AddTransient<IRepositoryAppointment, DbAppointmentRepository>();
-            //services.AddProtectedBrowserStorage();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

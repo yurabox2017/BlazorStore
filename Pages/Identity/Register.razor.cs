@@ -26,6 +26,7 @@ namespace BlazorStore.Pages.Identity
         [Inject] public ILogger<Register> Logger { get; set; }
         [Inject] public IEmailSender EmailSender { get; set; }
         [Inject] public NavigationManager NavigationManager { get; set; }
+        [Inject] public RoleManager<IdentityRole> RoleManager { get; set; }
         [Parameter] public string ReturnUrl { get; set; }
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
@@ -73,6 +74,11 @@ namespace BlazorStore.Pages.Identity
             var result = await UserManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
             {
+                if (!await RoleManager.RoleExistsAsync(StaticData.AdminRole))
+                    await RoleManager.CreateAsync(new(StaticData.AdminRole));
+
+                await UserManager.AddToRoleAsync(user, StaticData.AdminRole);
+
                 Logger.LogInformation("User created a new account with password.");
 
                 var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);

@@ -3,7 +3,7 @@
 @using System.IO
 
 @inject IRepositoryProduct _db
-
+@attribute [Authorize(Roles = StaticData.AdminRole)]
 <div class="component-title row justify-content-between align-items-center">
     <div class="col-6">
         <h1 class="text-info">Product List</h1>
