@@ -1,82 +1,106 @@
 ﻿@page "/shoppingcart"
 @inject ProtectedLocalStorage _cartStorage
 @inject IRepositoryProduct _db
+@inject NavigationManager _nav
+@if (showAppointment)
+{
+    <AppointmentComponent Appointment="AppointmentObj" Back="ShowAppointment" />
+}
+else
+{
+    <div class="container border rounded p-2">
+        <div class="row"> <div class="col"><h1 class="text-info">Shopping Cart</h1></div></div>
+        @if (products == null)
+        {
 
-<div class="container border rounded p-2">
-    <div class="row"> <div class="col"><h1 class="text-info">Shopping Cart</h1></div></div>
-    @if (products == null)
-    {
+            <div class="row">
+                <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/108183/screenshots/5331825/loading_xxi.gif" /></div>
+            </div>
 
-        <div class="row">
-            <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/108183/screenshots/5331825/loading_xxi.gif" /></div>
-        </div>
-
-    }
-    else if (products.Count > 0)
-    {
-        <div class="row table-responsive">
-            <div class="col">
-                <table class="table table-striped">
-                    <thead class="bg-info">
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in products)
-                        {
+        }
+        else if (products.Count > 0)
+        {
+            <div class="row table-responsive">
+                <div class="col">
+                    <table class="table table-striped">
+                        <thead class="bg-info">
                             <tr>
-                                <td><img src="@ImageToDisplayConverter(item.Image)" class="img-thumbnail img-fluid" style="height:150px;width:150px" /></td>
-                                <td>@item.Name</td>
-                                <td>@item.Category.Name</td>
-                                <td>@item.Quantity</td>
-                                <td>@string.Format("{0:C}", item.Price)</td>
-                                <td class="text-right">
-                                    <div class="btn-group">
-                                        <button @onclick="(()=> DeleteFromCart(item))" class="btn btn-outline-danger">Delete</button>
-                                    </div>
-                                </td>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th></th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-                <div class="row">
-                    <div class="col-6 text-left">
-                        <button class="btn btn-success">Book Now</button>
-                    </div>
-                    <div class="col-6 text-right">
-                        <div class="text-info font-weight-bold">Total Price: @string.Format("{0:C}", totalPrice)</div>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in products)
+                            {
+                                <tr>
+                                    <td><div><img src="@ImageToDisplayConverter(item.Image)" class="img-fluid" style="height:150px;width:150px" /></div></td>
+                                    <td>@item.Name</td>
+                                    <td>@item.Category.Name</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@string.Format("{0:C}", item.Price)</td>
+                                    <td class="text-right">
+                                        <div class="btn-group">
+                                            <button @onclick="(()=> DeleteFromCart(item))" class="btn btn-outline-danger">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-6 text-left">
+                            <button class="btn btn-success" @onclick="BookNow">Book Now</button>
+                        </div>
+                        <div class="col-6 text-right">
+                            <div class="text-info font-weight-bold">Total Price: @string.Format("{0:C}", totalPrice)</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-    else
-    {
-        <div class="row">
-            <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/1231865/screenshots/11157048/media/bc9427646c632ded563ee076fdc5dfda.jpg?compress=1&resize=800x600" /></div>
-        </div>
-    }
-</div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/1231865/screenshots/11157048/media/bc9427646c632ded563ee076fdc5dfda.jpg?compress=1&resize=800x600" /></div>
+            </div>
+        }
+    </div>
 
+}
 @code {
     List<Product> products = new();
     private double totalPrice = 0;
     private List<int> listOfShoppingCart = new();
+    bool showAppointment = false;
+    public Appointment AppointmentObj { get; set; }
 
-    void Details(Product product)
+    void BookNow()
+    {
+        AppointmentObj = new()
+        {
+            AppointmentDate = DateTime.Now
+        };
+        showAppointment = true;
+        //   AppointmentObj.Product = await _db.GetSingleProductAsync(ProductId);
+    }
+    protected override async Task OnInitializedAsync()
     {
 
     }
-
-    void DeleteFromCart(Product product)
+    void ShowAppointment() => showAppointment = false;
+    async Task DeleteFromCart(Product product)
     {
-
+        listOfShoppingCart.Clear();
+        listOfShoppingCart = await _cartStorage.DelFromSessionAsync<List<int>>(StaticData.SessionKey, product.Id);
+        products = new();
+        totalPrice = 0;
+        if (listOfShoppingCart is not null)
+            await LoadProducts();
+        StateHasChanged();
     }
     string ImageToDisplayConverter(byte[] image)
     {
@@ -98,27 +122,31 @@
             listOfShoppingCart = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
             if (listOfShoppingCart is not null)
             {
-                for (int i = 0; i < listOfShoppingCart.Count; i++)
-                {
-                    var currentProduct = await _db.GetSingleProductAsync(listOfShoppingCart[i]);
-
-                    if (products.Exists(x => x.Id.Equals(currentProduct.Id)))
-                        products.FirstOrDefault(x => x.Id.Equals(currentProduct.Id)).Quantity++;
-                    else
-                    {
-                        currentProduct.Quantity = 1;
-                        products.Add(currentProduct);
-                    }
-                }
-                products.ForEach(x =>
-                {
-                    totalPrice += x.Price * x.Quantity;
-                });
-
+                await LoadProducts();
                 StateHasChanged();
             }
 
         }
+
+    }
+    async Task LoadProducts()
+    {
+        for (int i = 0; i < listOfShoppingCart.Count; i++)
+        {
+            var currentProduct = await _db.GetSingleProductAsync(listOfShoppingCart[i]);
+
+            if (products.Exists(x => x.Id.Equals(currentProduct.Id)))
+                products.FirstOrDefault(x => x.Id.Equals(currentProduct.Id)).Quantity++;
+            else
+            {
+                currentProduct.Quantity = 1;
+                products.Add(currentProduct);
+            }
+        }
+        products.ForEach(x =>
+        {
+            totalPrice += x.Price * x.Quantity;
+        });
 
     }
 }
