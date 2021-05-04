@@ -1,0 +1,79 @@
+﻿@page "/users"
+@attribute [Authorize(Roles = StaticData.AdminRole)]
+@inject UserManager<IdentityUser> _userManager
+@*если applicationuser то надо добавлять в сервис*@
+
+@if (hideDetails)
+{
+
+    if (applicationUsers is null)
+    {
+        <div class="row">
+            <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/108183/screenshots/5331825/loading_xxi.gif" /></div>
+        </div>
+    }
+    else if (applicationUsers.Count > 0)
+    {
+
+        <div class="row table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>UserName</th>
+                        <th>Email</th>
+                        <th>EmailConfirmed</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in applicationUsers)
+                    {
+                        <tr>
+                            <td>@item.UserName</td>
+                            <td>@item.Email</td>
+                            <td>@item.</td>
+                            @*<td>@item.FullName</td>*@
+                            <td>@(item.EmailConfirmed ? "Yes" : "No")</td>
+                            <td class="text-right">
+                                <div class="btn-group">
+
+                                    <button @onclick="(() => LockUser(item))" class="btn btn-outline-warning">LockUser</button>
+                                    <button @onclick="(() => Details(item))" class="btn btn-outline-info">Details</button>
+                                </div>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/1231865/screenshots/11157048/media/bc9427646c632ded563ee076fdc5dfda.jpg?compress=1&resize=800x600" /></div>
+        </div>
+    }
+}
+else
+{
+    <UserDetail IdentityUser="applicationUserObj"></UserDetail>
+}
+
+@code {
+    private bool hideDetails = true;
+    private List<IdentityUser> applicationUsers;
+    private IdentityUser applicationUserObj;
+
+    protected override async Task OnInitializedAsync()
+    {
+        applicationUsers = await _userManager.Users.ToListAsync();
+    }
+    void LockUser(IdentityUser applicationUser) { }
+    void Details(IdentityUser applicationUser)
+    {
+        applicationUserObj = applicationUser;
+        hideDetails = !hideDetails;
+    }
+
+}
