@@ -32,7 +32,11 @@ namespace BlazorStore.Data.Repository.Services
             return true;
         }
 
-        public async Task<List<Product>> GetAllProductsAsync() => await _db.Products.Include(x => x.Category).ToListAsync();
+        public async Task<List<Product>> GetAllProductsAsync()
+        {
+            var test = await _db.Products.Include(x => x.Category).ToListAsync();
+            return test;
+        }
 
         public async Task<Product> GetSingleProductAsync(int id) => await _db.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.Id.Equals(id));
 

@@ -1,31 +1,74 @@
-﻿
-<div class="container p-2 border rounded">
-    <div class="row"> <div class="col"><h1 class="text-info">User Detail</h1></div></div>
-    <div class="row  form-group">
-        <div class="col-3">UserName</div>
-        <div class="col-5">@IdentityUser.UserName</div>
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@attribute [Authorize(Roles = StaticData.AdminRole)]
+@if (IdentityRoles is not null)
+{
+    <div class="container p-2 border rounded">
+        <div class="row"> <div class="col"><h1 class="text-info">User Detail</h1></div></div>
+        <div class="row  form-group">
+            <div class="col-3">UserName</div>
+            <div class="col-5">@IdentityUser.UserName</div>
+        </div>
+        <div class="row  form-group">
+            <div class="col-3">Email</div>
+            <div class="col-5">@IdentityUser.Email</div>
+        </div>
+        <div class="row  form-group">
+            <div class="col-3">EmailConfirmed</div>
+            <div class="col-5">@(IdentityUser.EmailConfirmed ? "Yes" : "No")</div>
+        </div>
+        <div class="row  form-group">
+            <div class="col-3">Roles</div>
+            <div class="col-5">
+                <div class="form-check form-check-inline">
+                    @foreach (var item in IdentityRoles)
+                    {
+                        <input class="form-check-input ml-2" type="checkbox" @onchange='((args)=> ChecketChanged(item.Name,args))' checked="checked" />@item.Name
+                    }
+                </div>
+            </div>
+            @*<div class="col-5">
+                    <select @onchange="(args=> SelectionChanged(args))" class="form-control">
+                        @foreach (var item in IdentityRoles)
+                        {
+                            <option class="p-1" value="@item.Id" selected="@(item.Name.Equals(UserRoles.FirstOrDefault()) ? true : false)">@item.Name</option>
+                        }
+                    </select>
+                </div>*@
+        </div>
+        <div class="row  form-group">
+            <div class="col-3"><button @onclick="() => Back.InvokeAsync()" class="btn btn-primary form-control">Back to list</button></div>
+            <div class="col-5"><button @onclick="()=>SaveRole.InvokeAsync(IdentityUser)" class="btn btn-success form-control">Edit role</button></div>
+        </div>
     </div>
-    <div class="row  form-group">
-        <div class="col-3">Email</div>
-        <div class="col-5">@IdentityUser.Email</div>
-    </div>
-    <div class="row  form-group">
-        <div class="col-3">EmailConfirmed</div>
-        <div class="col-5">@(IdentityUser.EmailConfirmed ? "Yes" : "No")</div>
-    </div>
-    <div class="row  form-group">
-        <div class="col-3">Roles</div>
-        @*<select>
-            @foreach (var item in collection)
-            {
-                <option></option>
-            }
-        </select>*@
-    </div>
-</div>
+}
 
 @code {
     [Parameter] public IdentityUser IdentityUser { get; set; }
+    [Parameter] public List<IdentityRole> IdentityRoles { get; set; }
+    [Parameter] public IList<string> UserRoles { get; set; }
 
+    [Parameter] public EventCallback Back { get; set; }
+    [Parameter] public EventCallback<string> AddRole { get; set; }
+    [Parameter] public EventCallback<string> DeleteRole { get; set; }
+    [Parameter] public EventCallback<IdentityUser> SaveRole { get; set; }
+    private string role;
+
+    private Action<string, string> action;
+    protected override async Task OnInitializedAsync()
+
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        //var user = await _userManager.GetUserAsync(authState.User);
+    }
+
+    async Task ChecketChanged(string val, ChangeEventArgs args)
+    {
+        if (Convert.ToBoolean(args.Value))
+            await AddRole.InvokeAsync(val);
+        else
+            await DeleteRole.InvokeAsync(val);
+
+    }
 
 }

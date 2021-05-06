@@ -1,5 +1,6 @@
 ﻿@page "/users"
 @attribute [Authorize(Roles = StaticData.AdminRole)]
+@inject IUserRepository _db
 @inject UserManager<IdentityUser> _userManager
 @*если applicationuser то надо добавлять в сервис*@
 
@@ -22,6 +23,7 @@
                         <th>UserName</th>
                         <th>Email</th>
                         <th>EmailConfirmed</th>
+                        <th>Lock out</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -31,14 +33,13 @@
                         <tr>
                             <td>@item.UserName</td>
                             <td>@item.Email</td>
-                            <td>@item.</td>
-                            @*<td>@item.FullName</td>*@
                             <td>@(item.EmailConfirmed ? "Yes" : "No")</td>
+                            @*<td>@item.FullName</td>*@
+                            <td>@(item.LockoutEnd is not null ? "Yes" : "No")</td>
                             <td class="text-right">
                                 <div class="btn-group">
-
-                                    <button @onclick="(() => LockUser(item))" class="btn btn-outline-warning">LockUser</button>
                                     <button @onclick="(() => Details(item))" class="btn btn-outline-info">Details</button>
+                                    <button @onclick="(() => LockUser(item))" class="btn btn-outline-danger">LockUser</button>
                                 </div>
 
                             </td>
@@ -57,23 +58,51 @@
 }
 else
 {
-    <UserDetail IdentityUser="applicationUserObj"></UserDetail>
+    <UserDetail UserRoles="userRoles" Back="Back" SaveRole="SaveRole" AddRole="AddRole" DeleteRole="DeleteRole" IdentityRoles="identityRoles" IdentityUser="applicationUserObj"></UserDetail>
 }
+
 
 @code {
     private bool hideDetails = true;
     private List<IdentityUser> applicationUsers;
     private IdentityUser applicationUserObj;
+    private List<IdentityRole> identityRoles;
+    private IList<string> userRoles;
 
     protected override async Task OnInitializedAsync()
     {
-        applicationUsers = await _userManager.Users.ToListAsync();
+        applicationUsers = await _db.GetAllUsersAsync();
     }
-    void LockUser(IdentityUser applicationUser) { }
-    void Details(IdentityUser applicationUser)
+    async Task LockUser(IdentityUser identityUser)
+    {
+        bool result = false;
+        result = await _db.SetLockUserAsync(identityUser, true, 999);
+        if (result)
+            applicationUsers = await _db.GetAllUsersAsync();
+    }
+    void Back() => hideDetails = !hideDetails;
+
+    async Task Details(IdentityUser applicationUser)
     {
         applicationUserObj = applicationUser;
+        identityRoles = await _db.GetAllRolesAsync();
+        userRoles = await _db.GetUserRolesAsync(applicationUser);
+
         hideDetails = !hideDetails;
+    }
+    void AddRole(string role)
+    {
+        userRoles.Add(role);
+
+    }
+    void DeleteRole(string role)
+    {
+        userRoles.Remove(role);
+    }
+    async Task SaveRole(IdentityUser identityUser)
+    {
+        await _db.EditRoleAsync(identityUser, userRoles);
+
     }
 
 }

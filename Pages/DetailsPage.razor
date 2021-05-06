@@ -4,7 +4,7 @@
 
 <h1 class="text-info mt-2">@(showAppointment ? "Book Appoinment" : "Appointment Details")</h1>
 
-@if (AppointmentObj.Product is not null)
+@if (AppointmentObj.Products is not null)
 {
     @if (showAppointment)
     {
@@ -29,10 +29,11 @@
     {
         AppointmentObj = new()
         {
-            AppointmentDate = DateTime.Now
+            AppointmentDate = DateTime.Now,
+            Products = new List<Product>()
         };
 
-        AppointmentObj.Product = await _db.GetSingleProductAsync(ProductId);
+        AppointmentObj.Products.Add(await _db.GetSingleProductAsync(ProductId));
     }
     void OnAddToCart() => showAppointment = true;
     void ShowDetails() => showAppointment = false;

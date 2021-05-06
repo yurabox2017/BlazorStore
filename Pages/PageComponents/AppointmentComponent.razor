@@ -1,5 +1,7 @@
 ﻿@inherits OwningComponentBase<IRepositoryAppointment>
+@inject IRepositoryProduct _dbProduct
 @inject NavigationManager _navManager
+@inject ProtectedLocalStorage _cartStorage
 
 <div class="container rounded border p-2">
     <div class="row"> <div class="col"><h1 class="text-info">Confirm Appointment</h1></div></div>
@@ -33,9 +35,6 @@
                 <div class="col-4"><button class="btn btn-success form-control">Book Now</button></div>
             </div>
         </EditForm>
-        <div class="col-3 offset-1">
-            <div><img class="img-fluid img-thumbnail" src="@ImageToDisplayConverter(Appointment.Product?.Image)" /></div>
-        </div>
     </div>
 </div>
 
@@ -46,19 +45,18 @@
 
     async Task ValidSubmit()
     {
+        //var productIds = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+        //Appointment.Products = new();
+
+        //foreach (var item in productIds)
+        //{
+        //    var product = await _dbProduct.GetSingleProductAsync(item);
+        //    Appointment.Products.Add(product);
+        //}
+
         var result = await Service.CreateAppointmentAsync(Appointment);
 
         if (result)
             _navManager.NavigateTo("appointmentbooked");
-    }
-    string ImageToDisplayConverter(byte[] image)
-    {
-        if (image is null)
-            return "";
-
-        var base64 = Convert.ToBase64String(image);
-        var finalString = string.Format("data:image/jpg;base64,{0}", base64);
-        return finalString;
-
     }
 }

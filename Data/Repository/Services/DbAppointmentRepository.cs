@@ -14,8 +14,9 @@ namespace BlazorStore.Data.Repository.Services
 
         public async Task<bool> CreateAppointmentAsync(Appointment appointment)
         {
-            appointment.ProductId = appointment.Product.Id;
-            appointment.Product = null;
+            appointment.Products.FirstOrDefault().Category = null;
+            appointment.Products
+            //appointment.Product = null;
 
             if (appointment is null)
                 return false;
@@ -34,9 +35,9 @@ namespace BlazorStore.Data.Repository.Services
             return true;
         }
 
-        public async Task<List<Appointment>> GetAllAppointmentsAsync() => await _db.Appointments.Include(x => x.Product).ToListAsync();
+        public async Task<List<Appointment>> GetAllAppointmentsAsync() => await _db.Appointments.Include(x => x.Products).ToListAsync();
 
-        public async Task<Appointment> GetSingleAppointmentAsync(int id) => await _db.Appointments.Include(x => x.Product).FirstOrDefaultAsync(x => x.Id.Equals(id));
+        public async Task<Appointment> GetSingleAppointmentAsync(int id) => await _db.Appointments.Include(x => x.Products).FirstOrDefaultAsync(x => x.Id.Equals(id));
 
         public async Task<bool> UpdateAppointmentAsync(Appointment appointment)
         {

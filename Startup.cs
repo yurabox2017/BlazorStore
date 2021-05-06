@@ -41,7 +41,7 @@ namespace BlazorStore
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services.AddServerSideBlazor();           
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<WeatherForecastService>();
@@ -49,7 +49,7 @@ namespace BlazorStore
             services.AddTransient<IRepositoryGoodsMarker, DbGoodsMarkerRepository>();
             services.AddTransient<IRepositoryProduct, DbProductRepository>();
             services.AddTransient<IRepositoryAppointment, DbAppointmentRepository>();
-
+            services.AddTransient<IUserRepository, DbUserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

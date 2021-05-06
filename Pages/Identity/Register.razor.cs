@@ -78,7 +78,14 @@ namespace BlazorStore.Pages.Identity
                 if (!await RoleManager.RoleExistsAsync(StaticData.AdminRole))
                     await RoleManager.CreateAsync(new(StaticData.AdminRole));
 
-                await UserManager.AddToRoleAsync(user, StaticData.AdminRole);
+                if (!await RoleManager.RoleExistsAsync(StaticData.UserRole))
+                    await RoleManager.CreateAsync(new(StaticData.UserRole));
+
+                var chkUsersInRoleAdmin = await UserManager.GetUsersInRoleAsync(StaticData.AdminRole);
+                if (chkUsersInRoleAdmin.Count == 0)
+                    await UserManager.AddToRoleAsync(user, StaticData.AdminRole);
+                else
+                    await UserManager.AddToRoleAsync(user, StaticData.UserRole);
 
                 Logger.LogInformation("User created a new account with password.");
 
