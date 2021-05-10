@@ -5,6 +5,7 @@ using BlazorStore.Data.Repository.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -41,7 +42,7 @@ namespace BlazorStore
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
-            services.AddServerSideBlazor();           
+            services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<WeatherForecastService>();
@@ -50,6 +51,17 @@ namespace BlazorStore
             services.AddTransient<IRepositoryProduct, DbProductRepository>();
             services.AddTransient<IRepositoryAppointment, DbAppointmentRepository>();
             services.AddTransient<IUserRepository, DbUserRepository>();
+            services.AddTransient<IOrdersRepository, DbOrdersRepository>();
+            services.AddScoped<IHostEnvironmentAuthenticationStateProvider>(sp =>
+            {
+                // this is safe because 
+                //     the `RevalidatingIdentityAuthenticationStateProvider` extends the `ServerAuthenticationStateProvider`
+                var provider = (ServerAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>();
+                return provider;
+            });
+
+            services.AddHttpContextAccessor();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

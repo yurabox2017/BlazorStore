@@ -1,0 +1,69 @@
+﻿@page "/orderDetails"
+@inject IOrdersRepository _db
+
+@attribute [Authorize(Roles = StaticData.AdminRole)]
+
+@if (orderDetails is null)
+{<div class="row">
+        <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/108183/screenshots/5331825/loading_xxi.gif" /></div>
+    </div>
+}
+else if (orderDetails.Count > 0)
+{
+
+    <div class="row">
+        <table class="table-responsive table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Id
+                    </th>
+                    <th>
+                        Order Num
+                    </th>
+                    <th>
+                        Customer
+                    </th>
+                    <th>
+                        Product Name
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in orderDetails)
+                {
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td>
+                        <td>
+                            @item.Order.Id
+                        </td>
+                        <td>
+                            @item.Customer.LastName
+                        </td>
+                        <td>
+                            @item.Product.Name
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/1231865/screenshots/11157048/media/bc9427646c632ded563ee076fdc5dfda.jpg?compress=1&resize=800x600" /></div>
+    </div>
+}
+
+@code {
+    private List<OrderDetails> orderDetails = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        orderDetails = await _db.GetAllOrderDetails();
+    }
+}

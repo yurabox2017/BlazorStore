@@ -20,13 +20,8 @@ namespace BlazorStore.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetails> OrderDetails { get; set; }
 
-        //protected override void OnModelCreating(ModelBuilder builder)
-        //{
-        //    builder.Entity<Appointment>()
-        //        .HasMany(x => x.Products)
-        //        .WithOne(x => x.Appointment)
-        //        .hasno();
-        //}
     }
 }

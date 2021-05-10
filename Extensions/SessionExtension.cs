@@ -29,7 +29,8 @@ namespace BlazorStore.Extensions
             }
             else
                 data = default(T);
-                return data == null ? default(T) : data;
+
+            return data == null ? default(T) : data;
         }
     }
 }

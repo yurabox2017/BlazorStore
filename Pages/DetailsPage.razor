@@ -4,16 +4,9 @@
 
 <h1 class="text-info mt-2">@(showAppointment ? "Book Appoinment" : "Appointment Details")</h1>
 
-@if (AppointmentObj.Products is not null)
+@if (product is not null)
 {
-    @if (showAppointment)
-    {
-        <AppointmentComponent Appointment="AppointmentObj" OnShowDetails="ShowDetails" />
-    }
-    else
-    {
-        <DetailsComponent OnAddToCart="AddToCart" Appointment="AppointmentObj" />
-    }
+    <DetailsComponent Product="product" OnAddToCart="AddToCart" Appointment="AppointmentObj" />
 }
 
 
@@ -21,6 +14,7 @@
     [Parameter] public int ProductId { get; set; }
     public Appointment AppointmentObj { get; set; }
     List<int> listOfShopingCart = new();
+    private Product product = new();
     int productCount = 0;
 
     bool showAppointment = false;
@@ -29,11 +23,11 @@
     {
         AppointmentObj = new()
         {
-            AppointmentDate = DateTime.Now,
-            Products = new List<Product>()
+            AppointmentDate = DateTime.Now
         };
 
-        AppointmentObj.Products.Add(await _db.GetSingleProductAsync(ProductId));
+        product = await _db.GetSingleProductAsync(ProductId);
+
     }
     void OnAddToCart() => showAppointment = true;
     void ShowDetails() => showAppointment = false;

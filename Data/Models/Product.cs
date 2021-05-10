@@ -27,6 +27,7 @@ namespace BlazorStore.Data.Models
         public virtual GoodsMarker GoodsMarker { get; set; }
         [NotMapped]
         public int Quantity { get; set; }
+        //public List<Appointment> Appointments { get; set; }
         //public int AppointmentId { get; set; }
     }
 }

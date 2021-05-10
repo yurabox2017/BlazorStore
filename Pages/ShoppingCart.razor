@@ -6,7 +6,7 @@
 
 @if (showAppointment)
 {
-    <AppointmentComponent Appointment="AppointmentObj" Back="ShowAppointment" />
+    <AppointmentComponent Products="products" Appointment="AppointmentObj" Back="ShowAppointment" />
 }
 else
 {
@@ -79,24 +79,16 @@ else
     private List<int> listOfShoppingCart = new();
     bool showAppointment = false;
     public Appointment AppointmentObj { get; set; }
+    
 
     async Task BookNow()
     {
         AppointmentObj = new()
         {
-            AppointmentDate = DateTime.Now,
-            Products = new List<Product>()
+            AppointmentDate = DateTime.Now
         };
 
-        var productIds = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
-
-        foreach (var item in productIds)
-        {
-            var product = await _db.GetSingleProductAsync(item);
-            AppointmentObj.Products.Add(product);
-        }
         showAppointment = true;
-
     }
 
     void ShowAppointment() => showAppointment = false;

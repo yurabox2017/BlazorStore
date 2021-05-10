@@ -1,0 +1,128 @@
+﻿@page "/login"
+@inject UserManager<IdentityUser> _userManager
+@inject SignInManager<IdentityUser> _signInManager
+@inject NavigationManager _navManager
+@inject IHostEnvironmentAuthenticationStateProvider _hostAuthentication
+@inject AuthenticationStateProvider _authState
+@attribute [AllowAnonymous]
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="row form-control">
+        <div class="alert alert-@(message.StartsWith("Error") ? "danger" : "success") alert-dismissible" role="alert">
+            <button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+            @message.Replace("Error", null)
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            @if (inputModel is not null)
+            {
+                <EditForm Model="inputModel" OnValidSubmit="ValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <h4>Use a local account to log in.</h4>
+                    <hr />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input @bind="inputModel.Email" class="form-control" />
+                        <ValidationMessage For="@(() =>inputModel.Email)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" @bind="inputModel.Password" class="form-control" />
+                        <ValidationMessage For="@(() =>inputModel.Password)" />
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" @bind="inputModel.RememberMe" />
+                                Remember me?
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Log in</button>
+                    </div>
+                    <div class="form-group">
+                        <p>
+                            <NavLink class="nav-item" href="Identity/Account/ForgotPassword">Forgot your password?</NavLink>
+                        </p>
+                        <p>
+                            <NavLink class="nav-item" href="register">Register as a new user</NavLink>
+                        </p>
+                        <p>
+                            <NavLink class="nav-item" href="Identity/Account/ResendEmailConfirmation">Resend email confirmation</NavLink>
+                        </p>
+                    </div>
+                </EditForm>
+            }
+        </section>
+    </div>
+</div>
+@code {
+    private InputModel inputModel;
+    private string returnUrl;
+    private string message;
+    protected override void OnParametersSet()
+    {
+        inputModel = new();
+    }
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    // Clear the existing external cookie to ensure a clean login process
+    //    //  await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+    //    //   _navManager
+    //}
+    async Task ValidSubmit()
+    {
+        returnUrl = _navManager.BaseUri;
+        var user = await _userManager.FindByEmailAsync(inputModel.Email);
+        var result = await _signInManager.PasswordSignInAsync(inputModel.Email, inputModel.Password, inputModel.RememberMe, lockoutOnFailure: false);
+
+        if (result.Succeeded)
+        {
+            var principal = await _signInManager.CreateUserPrincipalAsync(user);
+
+            var identity = new ClaimsIdentity(
+                                          principal.Claims,
+                                          Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
+
+            principal = new ClaimsPrincipal(identity);
+            _signInManager.Context.User = principal;
+            _hostAuthentication.SetAuthenticationState(Task.FromResult(new AuthenticationState(principal)));
+            // now the authState is updated
+            var authState = await _authState.GetAuthenticationStateAsync();
+
+            message = $"{authState.User.Identity.Name}, signed in.";
+            message = "";
+            _navManager.NavigateTo(_navManager.BaseUri);
+        }
+        if (result.IsLockedOut)
+        {
+            _navManager.NavigateTo($"{_navManager.BaseUri}/Identity/Account/Lockout");
+        }
+        else
+        {
+            message = "";
+            message = "Error Username or password is incorrect.";
+        }
+
+    }
+
+    public class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Display(Name = "Remember me?")]
+        public bool RememberMe { get; set; }
+    }
+}

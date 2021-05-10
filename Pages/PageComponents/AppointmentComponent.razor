@@ -42,6 +42,7 @@
 @code {
     [Parameter] public EventCallback Back { get; set; }
     [Parameter] public Appointment Appointment { get; set; }
+    [Parameter] public List<Product> Products { get; set; }
 
     async Task ValidSubmit()
     {
@@ -54,9 +55,12 @@
         //    Appointment.Products.Add(product);
         //}
 
-        var result = await Service.CreateAppointmentAsync(Appointment);
+        var result = await Service.CreateAppointmentAsync(Appointment, Products);
 
         if (result)
+        {
+            await _cartStorage.DeleteAsync(StaticData.SessionKey);
             _navManager.NavigateTo("appointmentbooked");
+        }
     }
 }

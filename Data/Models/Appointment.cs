@@ -20,9 +20,6 @@ namespace BlazorStore.Data.Models
         public string Email { get; set; }
         public DateTime AppointmentDate { get; set; }
         public bool IsConfirmed { get; set; }
-        //public int ProductId { get; set; }
-        //[ForeignKey(nameof(ProductId))]
-        public virtual ICollection<Product> Products { get; set; }
-        //userId
+
     }
 }
