@@ -12,9 +12,10 @@
 
 @code {
     [Parameter] public int ProductId { get; set; }
+
     public Appointment AppointmentObj { get; set; }
     List<int> listOfShopingCart = new();
-    private Product product = new();
+    private Product product;
     int productCount = 0;
 
     bool showAppointment = false;
@@ -49,7 +50,8 @@
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        listOfShopingCart = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
+        if (firstRender)
+            listOfShopingCart = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
 
     }
 }

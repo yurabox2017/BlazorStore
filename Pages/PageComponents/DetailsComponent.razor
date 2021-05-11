@@ -4,33 +4,35 @@
         <div class="col text-center"> <img height="200" src="https://cdn.dribbble.com/users/108183/screenshots/5331825/loading_xxi.gif" /></div>
     </div>
 }
-<div class="row p-4 border rounded">
-    <div class="col-8">
-        <div class="row form-group">
-            <div class="col-4">Name:</div>
-            <div class="col-8"><input class="form-control" readonly Value="@Product.Name" /></div>
+else
+{
+    <div class="row p-4 border rounded">
+        <div class="col-8">
+            <div class="row form-group">
+                <div class="col-4">Name:</div>
+                <div class="col-8"><input class="form-control" readonly Value="@Product.Name" /></div>
+            </div>
+            <div class="row form-group">
+                <div class="col-4">Shade Color:</div>
+                <div class="col-8"><input class="form-control" readonly Value="@Product.ShadeColor" /></div>
+            </div>
+            <div class="row form-group">
+                <div class="col-4">Price:</div>
+                <div class="col-8"><input class="form-control" readonly Value="@Product.Price" /> </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-4">Category Name:</div>
+                <div class="col-8"><input class="form-control" readonly Value="@Product.Category.Name" /></div>
+            </div>
+            <div class="row form-group">
+                <div class="col-4 offset-4"> <a href="/" class="btn btn-success form-control">Back to List</a></div>
+                <div class="col-4"><button @onclick="OnAddToCart" class="btn btn-primary form-control"> Add To Cart</button></div>
+            </div>
         </div>
-        <div class="row form-group">
-            <div class="col-4">Shade Color:</div>
-            <div class="col-8"><input class="form-control" readonly Value="@Product.ShadeColor" /></div>
-        </div>
-        <div class="row form-group">
-            <div class="col-4">Price:</div>
-            <div class="col-8"><input class="form-control" readonly Value="@Product.Price" /> </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-4">Category Name:</div>
-            <div class="col-8"><input class="form-control" readonly Value="@Product.Category.Name" /></div>
-        </div>
-        <div class="row form-group">
-            <div class="col-4 offset-4"> <a href="/" class="btn btn-success form-control">Back to List</a></div>
-            <div class="col-4"><button @onclick="OnAddToCart" class="btn btn-primary form-control"> Add To Cart</button></div>
+        <div class="col-3 offset-1">
+            <div><img class="img-fluid img-thumbnail" src="@ImageToDisplayConverter(Product.Image)" /></div>
         </div>
     </div>
-    <div class="col-3 offset-1">
-        <div><img class="img-fluid img-thumbnail" src="@ImageToDisplayConverter(Product.Image)" /></div>
-    </div>
-</div>
 }
 
 @code {
