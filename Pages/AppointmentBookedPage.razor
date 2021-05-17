@@ -1,4 +1,7 @@
 ﻿@page "/appointmentbooked"
+@inject NavigationManager _navManager
+@using Microsoft.AspNetCore.WebUtilities
+@using BlazorStore.Merchant.Paypal
 
 <div class="container text-center">
     <div class="row justify-content-center">
@@ -15,5 +18,25 @@
     </div>
 </div>
 @code {
+    private Uri uri;
+    private static string txVal = string.Empty;
+    private PDTHolder pdtHolder;
 
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            uri = _navManager.ToAbsoluteUri(_navManager.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("tx", out var txValue))
+            {
+                txVal = txValue;
+            }
+            if (!string.IsNullOrWhiteSpace(txVal))
+            {
+                pdtHolder = PDTHolder.Success(txVal);
+            }
+
+        }
+    }
 }
