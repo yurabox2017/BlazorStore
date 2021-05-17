@@ -30,27 +30,26 @@
                 <div class="col-4">Date:</div>
                 <div class="col-8"><InputDate class="form-control" @bind-Value="@Appointment.AppointmentDate" /></div>
             </div>
-
-            <form action="https://www.sandbox.paypal.com/cgi-bin/websrc" method="post">
-                <input type="hidden" name="cmd" value="_cart" />
-                <input type="hidden" name="upload" value="1" />
-                <input type="hidden" name="business" value="sb-jfbfl6077739@business.example.com" />
-                <input type="hidden" name="return" value="https://localhost:44340/appointmentbooked" />
-                <input type="hidden" name="currency_code" value="RUB" />
-
-                @foreach (var item in Products)
-                {
-                    <input type="hidden" name="item_name_@count" value="@item.Name" />
-                    <input type="hidden" name="amount_@count" value="@item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
-                    <input type="hidden" name="quantity_@count" value="@item.Quantity" />
-                    count++;
-                }
-                <input type="submit" value="Make Appointment" class="btn btn-success" />
-            </form>
-
             <div class="row form-group">
                 <div class="col-4 offset-4"><button @onclick="Back" class="btn btn-primary form-control">Back</button></div>
-                @*<div class="col-4"><button class="btn btn-success form-control">Book Now</button></div>*@
+                <div class="col-4">
+                    <form action="https://www.sandbox.paypal.com/cgi-bin/websrc" method="post">
+                        <input type="hidden" name="cmd" value="_cart" />
+                        <input type="hidden" name="upload" value="1" />
+                        <input type="hidden" name="business" value="sb-jfbfl6077739@business.example.com" />
+                        <input type="hidden" name="return" value="https://localhost:44340/appointmentbooked" />
+                        <input type="hidden" name="currency_code" value="RUB" />
+
+                        @foreach (var item in Products)
+                        {
+                            <input type="hidden" name="item_name_@count" value="@item.Name" />
+                            <input type="hidden" name="amount_@count" value="@item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                            <input type="hidden" name="quantity_@count" value="@item.Quantity" />
+                            count++;
+                        }
+                        <input type="submit" value="Make Appointment" class="btn btn-success form-control" />
+                    </form>
+                </div>
             </div>
         </EditForm>
     </div>

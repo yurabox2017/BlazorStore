@@ -9,7 +9,7 @@
         <h1 class="text-info">Product List</h1>
     </div>
     <div class="col-6 text-right">
-        <button @onclick="SaveProduct" data-toggle="modal" data-target="#PopModalProduct" class="btn btn-info">Add New Product</button>
+        <button @onclick="SaveProduct" disabled="@addProductDisable" data-toggle="modal" data-target="#PopModalProduct" class="btn btn-info">Add New Product</button>
     </div>
 </div>
 
@@ -146,9 +146,10 @@ else
 
 
 @code {
-    List<Category> categories;
-    List<GoodsMarker> goodsMarkers;
-    List<Product> products;
+    private List<Category> categories;
+    private List<GoodsMarker> goodsMarkers;
+    private List<Product> products;
+    private bool addProductDisable = true;
     public byte[] ImageUploaded { get; set; }
 
     bool popModal { get; set; } = false;
@@ -158,6 +159,12 @@ else
     protected override async Task OnInitializedAsync()
     {
         products = await _db.GetAllProductsAsync();
+        categories = await _db.GetAllCategories();
+        goodsMarkers = await _db.GetAllGoodsMarkers();
+
+        if (categories.Count > 0 && goodsMarkers.Count > 0)
+            addProductDisable = false;
+
     }
 
     public void ShowClose() => popModal = !popModal;
