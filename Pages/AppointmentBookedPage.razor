@@ -1,5 +1,8 @@
 ﻿@page "/appointmentbooked"
 @inject NavigationManager _navManager
+@inject ProtectedLocalStorage _cartStorage
+@inherits OwningComponentBase<IRepositoryAppointment>
+
 @using Microsoft.AspNetCore.WebUtilities
 @using BlazorStore.Merchant.Paypal
 
@@ -22,8 +25,7 @@
     private static string txVal = string.Empty;
     private PDTHolder pdtHolder;
 
-
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
@@ -35,8 +37,13 @@
             if (!string.IsNullOrWhiteSpace(txVal))
             {
                 pdtHolder = PDTHolder.Success(txVal);
+                if (pdtHolder is not null)
+                {
+                  //  await _cartStorage.DeleteAsync(StaticData.SessionKey);
+                }
             }
 
         }
     }
+
 }

@@ -1,7 +1,7 @@
 ﻿@inherits OwningComponentBase<IRepositoryAppointment>
 @inject IRepositoryProduct _dbProduct
 @inject NavigationManager _navManager
-@inject ProtectedLocalStorage _cartStorage
+
 @using BlazorStore.Merchant.Paypal
 
 <div class="container rounded border p-2">
@@ -73,15 +73,6 @@
 
     async Task ValidSubmit()
     {
-        //var productIds = await _cartStorage.GetFromSession<List<int>>(StaticData.SessionKey);
-        //Appointment.Products = new();
-
-        //foreach (var item in productIds)
-        //{
-        //    var product = await _dbProduct.GetSingleProductAsync(item);
-        //    Appointment.Products.Add(product);
-        //}
-
         var result = await Service.CreateAppointmentAsync(Appointment, Products);
 
         if (result)
