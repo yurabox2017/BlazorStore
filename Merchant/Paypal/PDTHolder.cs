@@ -89,7 +89,7 @@ namespace BlazorStore.Merchant.Paypal
                             ph.PayerFirstName = sValue;
                             break;
                         case "mc_fee":
-                            ph.PaymentFee = Convert.ToInt32(sValue);
+                            ph.PaymentFee = double.Parse(sValue, CultureInfo.InvariantCulture);
                             break;
                         case "business":
                             ph.BusinesEmail = sValue;
