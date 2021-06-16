@@ -130,7 +130,7 @@ else
                                 </div>
                             </div>
                             <div class="col-3">
-                                <img style="width:100%" src="@ImageToDisplayConverter(productObj.Image)" />
+                                <img style="width:100%" src="@ImageToDisplayConverter(ImageUploaded ?? productObj.Image)" />
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -167,7 +167,11 @@ else
 
     }
 
-    public void ShowClose() => popModal = !popModal;
+    public void ShowClose()
+    {
+        ImageUploaded = null;
+        popModal = !popModal;
+    }
 
     async Task SaveProduct()
     {
